@@ -7,13 +7,21 @@ import qmc from "../assets/1_qmckz-4ppRl9i8-tEmGmHw.png";
 import decorative_obj from "../assets/decorative_obj.png";
 import tiles3 from "../assets/generic_platformer_tiles.png";
 import playerPNG from "../assets/dude.png"
+import slime from "../assets/Monsters/slime-autentico.png"
+import javali from "../assets/Monsters/javalisPNGAutentico.png"
+
 import Player from '../assets/Player/Knight.json'
 import kn1 from '../assets/Player/Knight-0.png'
 import kn2 from '../assets/Player/Knight-1.png'
 import kn3 from '../assets/Player/Knight-2.png'
-import kn4 from '../assets/Player/Knight-3.png'
-import kn5 from '../assets/Player/Knight-4.png'
-import kn6 from '../assets/Player/Knight-5.png'
+// import kn4 from '../assets/Player/Knight-3.png'
+// import kn5 from '../assets/Player/Knight-4.png'
+// import kn6 from '../assets/Player/Knight-5.png'
+// import kn7 from '../assets/Player/Knight-6.png'
+// import kn8 from '../assets/Player/Knight-7.png'
+// import kn9 from '../assets/Player/Knight-8.png'
+// import kn10 from '../assets/Player/Knight-9.png'
+// import kn11 from '../assets/Player/Knight-10.png'
 //Tutorial 
 import PhaserLogo from '../assets/tutorial/assets/logo.png';
 import greyBox from '../assets/tutorial/assets/ui/grey_box.png';
@@ -121,45 +129,35 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.image('blueButton1', ButtonBlue);
     this.load.image('blueButton2', ButtonBlue3);
 
+    // Player.textures.forEach((e)=>{
+    //   e.image = kn
+    // })
+    Player.textures[0].image = kn1
+    Player.textures[1].image = kn2
+    Player.textures[2].image = kn3
+    // Player.textures[3].image = kn4
+    // Player.textures[4].image = kn5
+    // Player.textures[5].image = kn6
+    // Player.textures[6].image = kn7
+    // Player.textures[7].image = kn8
+    // Player.textures[8].image = kn9
+    // Player.textures[9].image = kn10
+    // Player.textures[10].image = kn11
 
-    this.load.atlas({
-      key: 'Player',
-      textureURL: kn1,
-      atlasURL: Player
-    });
-    this.load.atlas({
-      key: 'Player',
-      textureURL: kn2,
-      atlasURL: Player
-    });
-    this.load.atlas({
-      key: 'Player',
-      textureURL: kn3,
-      atlasURL: Player
-    });
-    this.load.atlas({
-      key: 'Player',
-      textureURL: kn4,
-      atlasURL: Player
-    });
-    this.load.atlas({
-      key: 'Player',
-      textureURL: kn5,
-      atlasURL: Player
-    });
-    this.load.atlas({
-      key: 'Player',
-      textureURL: kn6,
-      atlasURL: Player
-    });
+    this.load.multiatlas('Player', Player);
+    // this.load.atlas('Player', [ kn1, kn2, kn3, kn4, kn5, kn6 ], Player);
 
+
+    // this.load.multiatlas('Player',Player,'/');
+    // this.textures.addAtlas('Player',kn1,Player);
 
     this.load.image("tiles2",pngbarn)
     this.load.image("tileset3",tiles3)
     this.load.image("tiles4",decorative_obj)
     this.load.image("background",background)
     this.load.tilemapTiledJSON("map",Map)
-    this.load.spritesheet("PC",playerPNG,{ frameWidth: 32, frameHeight: 48 })
+    this.load.spritesheet("slime",slime,{ frameWidth: 110, frameHeight: 90 })
+    this.load.spritesheet("javali",javali,{ frameWidth: 103, frameHeight: 84 })
   }
  
   create () {
