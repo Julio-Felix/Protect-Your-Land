@@ -15,7 +15,8 @@ export default class Button extends Phaser.GameObjects.Container {
     this.add(this.text);
  
     this.button.on('pointerdown', function () {
-      this.scene.scene.launch(targetScene).launch('HUDScene').stop();;
+      if(targetScene == 'Game')this.scene.scene.launch(targetScene).launch('HUDScene').stop();
+      else this.scene.scene.launch(targetScene).stop();
 
     }.bind(this));
  

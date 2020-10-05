@@ -37,6 +37,7 @@ export default class OptionsScene extends Phaser.Scene {
   // this.musicOn = true;
   // this.soundOn = true;
 
+  
   this.model = this.sys.game.globals.model;
 
 

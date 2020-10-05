@@ -4,7 +4,8 @@ export default class HealthBar {
     constructor (scene, x, y)
     {
         this.bar = new Phaser.GameObjects.Graphics(scene);
-
+        // console.log(this.bar)
+        this.bar.setScale(2.5)
         this.x = x;
         this.y = y;
         this.value = 100;
@@ -13,6 +14,14 @@ export default class HealthBar {
         this.draw();
 
         scene.add.existing(this.bar);
+    }
+
+
+    isDead(){
+        if(this.value == 0){
+            return true
+        }
+        return false
     }
 
     decrease (amount)
@@ -54,6 +63,11 @@ export default class HealthBar {
         var d = Math.floor(this.p * this.value);
 
         this.bar.fillRect(this.x + 2, this.y + 2, d, 12);
+    }
+    update(){
+        if(this.value < 100){
+
+        }
     }
 
 }

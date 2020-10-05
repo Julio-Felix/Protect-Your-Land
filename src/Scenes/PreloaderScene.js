@@ -1,6 +1,8 @@
 import 'phaser';
 import Map from "../assets/RealesedMap.json"
 
+import second_map from "../assets/ReleasedMap2.json"
+
 import background from "../assets/background.png";
 import pngbarn from "../assets/pngbarn (1).png";
 import qmc from "../assets/1_qmckz-4ppRl9i8-tEmGmHw.png";
@@ -156,6 +158,7 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.image("tiles4",decorative_obj)
     this.load.image("background",background)
     this.load.tilemapTiledJSON("map",Map)
+    this.load.tilemapTiledJSON("map_second_level",second_map)
     this.load.spritesheet("slime",slime,{ frameWidth: 110, frameHeight: 90 })
     this.load.spritesheet("javali",javali,{ frameWidth: 103, frameHeight: 84 })
   }

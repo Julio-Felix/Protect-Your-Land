@@ -1,12 +1,12 @@
 import 'phaser';
-import HealthBar from '../Objects/HealthBar.js'
+import EventCenter from '../Objects/EventCenter.js'
 // import logoImg from "../assets/logo.png";
 export default class GameScene extends Phaser.Scene {
   constructor () {
     super('Game');
 
   }
- 
+
   preload () {
     console.log(this.scene)
     // this.load.image("logo", logoImg);
@@ -33,19 +33,35 @@ export default class GameScene extends Phaser.Scene {
     ground.setDepth(10)
     aboveCollider.setDepth(20)
     
-    // console.log(scene.textures)
-    console.log(this.textures)
+    this.physics.world.setBounds(0, 0, map.widthInPixels,map.heightInPixels);
     
     
     
+    // map.findObject('Map', function(object) {
+
+    //   // rooms
+    //   if (object.type === 'ChangeMap') {
+    //       this.ChangeMaps.push(object);
+    //   }
+  
+    //   // spawn points
+    //   if (object.type === 'Spawn') {
+    //       if (object.name === 'Player') {
+    //           this.player = new Player(this, object.x, object.y);
+    //       }
+    //   }
+    // }, this);
+
+
+
+
     // Player
 
     this.player = this.physics.add.sprite(0,850,"Player","Idle (1).png")
     this.player.setScale(0.1, 0.1);
-    console.log(this.player)
     this.physics.add.collider(this.player, ground);
     this.player.setGravityY(600)
-
+    this.player.body.collideWorldBounds = true;
     // Player Anims
 
     this.anims.create({
@@ -74,6 +90,7 @@ export default class GameScene extends Phaser.Scene {
     // this.slime.setScale(0.5, 0.5);
     this.physics.add.collider(this.slime, ground);
     this.slime.setGravityY(600)
+    this.slime.body.collideWorldBounds = true;
     this.slime_movement = 300
 
 
@@ -86,7 +103,7 @@ export default class GameScene extends Phaser.Scene {
     });
     this.anims.create({
       key: 'right_slime',
-      frames: this.anims.generateFrameNames('slime', { start: 6, end: 9}),
+      frames: this.anims.generateFrameNames('slime', { start: 4, end: 7}),
       frameRate: 20,
       repeat: -1
     });
@@ -97,6 +114,7 @@ export default class GameScene extends Phaser.Scene {
     // this.slime.setScale(0.5, 0.5);
     this.physics.add.collider(this.javali, ground);
     this.javali.setGravityY(600)
+    this.javali.body.collideWorldBounds = true;
     this.javali_movement = 300
 
 
@@ -114,33 +132,28 @@ export default class GameScene extends Phaser.Scene {
       repeat: -1
     });
     
-    
-
-
-
-
-    // this.textLife = this.add.text(0, 400,'Test',null)
     // Cameras Main
     this.camera = this.cameras.main
     this.camera.startFollow(this.player,true)
     this.camera.setBounds(0,0,map.widthInPixels,map.heightInPixels)
     this.camera.setZoom(2.5);
 
-    
-    // this.textLife.setScrollFactor(0,0);
-
-    this.player_healthBar = new HealthBar(this,0,550);
 
 
-  
+
+
+
+
+    // this.events.emit('gameCountDown',{countDown:10});
   }
   update(){
+    EventCenter.emit('DecreaseLifeOfPlayer',0.1);
+    // let i = this.events.emit('DecreaseLifeOfPlayer',{countDown:1});
+    // console.log(i)
+    // this.count-=1
 
     const prevVelocity = this.player.body.velocity.clone()
     const cursors = this.input.keyboard.createCursorKeys()
-    if(cursors.up.isDown){
-      console.log('ccima')
-    }
     if(cursors.left.isDown && cursors.up.isDown && this.player.body.blocked.down){
       this.player.body.setVelocityX(-400)
       this.player.body.setVelocityY(-350)
