@@ -1,6 +1,7 @@
 import 'phaser';
 import EventCenter from '../Objects/EventCenter.js'
-import HealthBar from '../Objects/HealthBar.js';
+import Slime from '../Classes/Slime.js'
+
 // import logoImg from "../assets/logo.png";
 export default class GameScene extends Phaser.Scene {
   constructor () {
@@ -109,19 +110,10 @@ export default class GameScene extends Phaser.Scene {
     map.findObject('Enemies', function(object) {
       // Slimes
       if (object.type === 'slime') {
-        let slime = this.physics.add.sprite(object.x,object.y,"slime",0)
+
+        let slime = new Slime(this,object.x,object.y,"slime",0)
+        //  this.physics.add.sprite(object.x,object.y,"slime",0)
         this.physics.add.collider(slime, this.ground);
-        slime.setGravityY(600)
-        slime.setScale(0.5,0.5)
-        slime.healthbar = new HealthBar(this,object.x,object.y,1)
-        slime.body.collideWorldBounds = true;
-        slime.already_attack = false
-        slime.movement_ac = 1
-        slime.setMaxVelocity(150)
-        slime.preUpdate = function(time,delta){        
-          this.anims.update(time, delta);
-          this.healthbar.setXandY(this.x,this.y - 50, 20, 10)
-        }
         this.slimes.add(slime);
       }
     }, this);
@@ -226,6 +218,7 @@ export default class GameScene extends Phaser.Scene {
       }
     }
   }
+
   PlayerAttack(player, monster){
     if(!monster.already_attack){
       monster.healthbar.decrease_custom(10);
@@ -252,7 +245,6 @@ export default class GameScene extends Phaser.Scene {
       EventCenter.emit('DecreaseLifeOfPlayer',10);
       player.immune = true;
       player.body.x > monster.body.x ? monster.movement_ac = 1 : monster.movement_ac = -1
-      // monster.movement_ac = (monster.movement_ac * -1) > 0 ? 1 : -1
       this.time.delayedCall(1000, function() {
         player.immune = false;
         monster.movement_ac = monster.movement_ac * -1
@@ -260,11 +252,7 @@ export default class GameScene extends Phaser.Scene {
         // enemy.follow = true;
       }, this);
 
-
-
       player.body.setVelocityY(-200)
-      // if (player.anims.getCurrentKey() == "right") player.body.velocity.x = -50;
-      // if (player.anims.getCurrentKey() == "left") player.body.velocity.x = 50;
 
     }
     
@@ -313,37 +301,15 @@ export default class GameScene extends Phaser.Scene {
           // else if(prevVelocity.x > 0)
       }
     }
-    
-
-    // this.SlimeMovement()
 
     Phaser.Actions.Call(this.slimes.getChildren(), function(slime) {
-      this.SlimeMovement(slime)
+      slime.Movement()
     },this)
 
     // this.javali.anims.play('left_javali',true)
     
   }
 
-
-
-  SlimeMovement(slime){
-    if(slime.active){
-      // if(slime.body.blocked.down) slime.body.setVelocityY(200)
-
-      if(slime.body.blocked.left) slime.movement_ac= 1
-  
-      if(slime.body.blocked.right) slime.movement_ac= -1
-      
-      if(slime.movement_ac > 0) {slime.anims.play('right_slime',true); slime.movement_ac+=10}
-      else {slime.anims.play('left_slime',true);slime.movement_ac-=10;}
-
-      
-      if(slime.attacking || slime.already_attack) slime.body.setVelocityX(slime.movement_ac)
-    }
-
-    if(slime.body.blocked.down && !slime.already_attack) slime.body.setAccelerationX(slime.movement_ac)
-  }
 
   CheckIfPlayerIsAttacking(){
     if((this.player.anims.getCurrentKey() == "attack_right" || this.player.anims.getCurrentKey() == "attack_left") ){
