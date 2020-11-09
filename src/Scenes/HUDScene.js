@@ -7,16 +7,16 @@ export default class HUDScene extends Phaser.Scene {
   }
 
   create () {
-    this.player_healthBar = new HealthBar(this,5,5,2.5);
+    this.sceneA.player.healthBar = new HealthBar(this,5,5,2.5);
+    // this.player_healthBar = new HealthBar(this,5,5,2.5);
 
     EventCenter.on('DecreaseLifeOfPlayer', function(amount){
-      this.player_healthBar.decrease(amount)
-      return this.player_healthBar.isDead()
+      this.sceneA.player.healthBar.decrease(amount)
     }, this)
 
     this.events.on(Phaser.Scenes.Events.SHUTDOWN, () => {
       EventCenter.off('DecreaseLifeOfPlayer', function(amount){
-        this.player_healthBar.decrease(amount)
+        this.sceneA.player.healthBar.decrease(amount)
       }, this)
     })
   }

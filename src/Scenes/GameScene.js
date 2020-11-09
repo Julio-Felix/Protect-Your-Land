@@ -1,6 +1,7 @@
 import 'phaser';
 import EventCenter from '../Objects/EventCenter.js'
 import Slime from '../Classes/Slime.js'
+import Javali from '../Classes/Javali.js'
 
 // import logoImg from "../assets/logo.png";
 export default class GameScene extends Phaser.Scene {
@@ -21,32 +22,27 @@ export default class GameScene extends Phaser.Scene {
   create() {
     this.scene.bringToTop('HUDScene')
     this.power = 0
-    const map = this.make.tilemap({key :  "map"})
-    const tileset2 = map.addTilesetImage("pngbarn (1)","tiles2")
-    const tileset3 = map.addTilesetImage("generic_platformer_tiles","tileset3")
-    const tileset4 = map.addTilesetImage("decorative_obj","tiles4")
+    this.map = this.make.tilemap({key :  "map"})
+    const tileset2 = this.map.addTilesetImage("pngbarn (1)","tiles2")
+    const tileset3 = this.map.addTilesetImage("generic_platformer_tiles","tileset3")
+    const tileset4 = this.map.addTilesetImage("decorative_obj","tiles4")
     // this.add.image(520,700, "background")
-    this.ground = map.createStaticLayer("ground",[tileset2,tileset4], 0, 0)
-    const background = map.createStaticLayer("background",[tileset2,tileset3], 0, 0)
-    const aboveCollider = map.createStaticLayer("aboveCollider",[tileset2,tileset4], 0, 0)
+    this.ground = this.map.createStaticLayer("ground",[tileset2,tileset4], 0, 0)
+    const background = this.map.createStaticLayer("background",[tileset2,tileset3], 0, 0)
+    const aboveCollider = this.map.createStaticLayer("aboveCollider",[tileset2,tileset4], 0, 0)
   
     this.ground.setCollisionByProperty({"collider":true})
-    console.log(map)
     this.ground.setDepth(10)
     aboveCollider.setDepth(20)
     
-    this.physics.world.setBounds(0, 0, map.widthInPixels,map.heightInPixels);
+    this.physics.world.setBounds(0, 0, this.map.widthInPixels,this.map.heightInPixels);
 
 
 
 
     // Player
 
-    this.player = this.physics.add.sprite(0,850,"Player","Idle (1).png")
-    this.player.setScale(0.1, 0.1);
-    this.physics.add.collider(this.player, this.ground);
-    this.player.setGravityY(600)
-    this.player.body.collideWorldBounds = true;
+
     // Player Anims
 
     this.anims.create({
@@ -77,46 +73,92 @@ export default class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'attack_right',
       frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Attack (', suffix:').png' }),
+      frameRate: 150,
+      repeat:0
+    });
+    
+
+    this.anims.create({
+      key: 'attack_left',
+      frames:this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Attack (', suffix:') left.png' }),
+      frameRate: 150,
+      repeat:0
+    });
+
+    this.anims.create({
+      key: 'dead_right',
+      frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Dead (', suffix:').png' }),
       frameRate: 60,
       repeat:0
     });
 
     this.anims.create({
-      key: 'attack_left',
-      frames:this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Attack (', suffix:') left.png' }),
+      key: 'dead_left',
+      frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Dead (', suffix:') left.png' }),
       frameRate: 60,
       repeat:0
     });
-
-    this.player.on("animationcomplete",function(animation,frame,gameobject){
-      if(animation.key == "attack_right" || animation.key == "attack_left"){ 
-        this.player.body.setVelocity(0)
-        if(animation.key == "attack_left") this.player.anims.play('turn_left', true);
-        else if(animation.key == "attack_right") this.player.anims.play('turn_right', true);
-
-        Phaser.Actions.Call(this.slimes.getChildren(), function(slime) {
-          slime.already_attack = false
-        },this)
-
-      }
-    },this)
-
-
+    
     // Slime
     // this.slime = this.physics.add.sprite(90,850,"slime",0)
 
-    this.slimes = this.add.group();
+    this.monsters = this.add.group();
+    this.javalis = this.add.group();
     // this.slime.setScale(0.5, 0.5);
-    map.findObject('Enemies', function(object) {
+    this.map.findObject('Enemies', function(object) {
       // Slimes
       if (object.type === 'slime') {
 
         let slime = new Slime(this,object.x,object.y,"slime",0)
         //  this.physics.add.sprite(object.x,object.y,"slime",0)
         this.physics.add.collider(slime, this.ground);
-        this.slimes.add(slime);
+        this.monsters.add(slime);
+      }
+
+      if (object.type === 'Hibrid') {
+        let n = Math.random() * 10
+        if(n > 5){
+          let javali = new Javali(this,object.x,object.y,"javali",0)
+          //  this.physics.add.sprite(object.x,object.y,"slime",0)
+          this.physics.add.collider(javali, this.ground);
+          this.monsters.add(javali);
+        }else{
+          let slime = new Slime(this,object.x,object.y,"slime",0)
+          //  this.physics.add.sprite(object.x,object.y,"slime",0)
+          this.physics.add.collider(slime, this.ground);
+          this.monsters.add(slime);
+        }
+      }
+
+      if (object.type === 'Javali') {
+
+        let javali = new Javali(this,object.x,object.y,"javali",0)
+        //  this.physics.add.sprite(object.x,object.y,"slime",0)
+        this.physics.add.collider(javali, this.ground);
+        this.monsters.add(javali);
       }
     }, this);
+
+    this.map.findObject('Player',function(object){
+      this.player = this.physics.add.sprite(object.x,object.y,"Player","Idle (1).png")
+      this.player.setScale(0.1, 0.1);
+      this.physics.add.collider(this.player, this.ground);
+      this.player.setGravityY(600)
+      this.player.body.collideWorldBounds = true;
+      this.player.type = "Player"
+      this.player.on("animationcomplete",function(animation,frame,gameobject){
+        if(animation.key == "attack_right" || animation.key == "attack_left"){ 
+          this.player.body.setVelocity(0)
+          if(animation.key == "attack_left") this.player.anims.play('turn_left', true);
+          else if(animation.key == "attack_right") this.player.anims.play('turn_right', true);
+  
+          Phaser.Actions.Call(this.monsters.getChildren() , function(monster) {
+            monster.already_attack = false
+          },this)
+  
+        }
+      },this)
+    },this)
 
 
     // this.physics.add.collider(this.slime, this.ground);
@@ -149,24 +191,24 @@ export default class GameScene extends Phaser.Scene {
     // this.javali_movement = 300
 
 
-    // // JAVALI Animation
-    // this.anims.create({
-    //   key: 'left_javali',
-    //   frames:this.anims.generateFrameNames('javali', { start: 7, end: 13}),
-    //   frameRate: 20,
-    //   repeat: -1
-    // });
-    // this.anims.create({
-    //   key: 'right_javali',
-    //   frames: this.anims.generateFrameNames('javali', { start: 0, end: 6}),
-    //   frameRate: 20,
-    //   repeat: -1
-    // });
+    // JAVALI Animation
+    this.anims.create({
+      key: 'left_javali',
+      frames:this.anims.generateFrameNames('javali', { start: 7, end: 13}),
+      frameRate: 20,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'right_javali',
+      frames: this.anims.generateFrameNames('javali', { start: 0, end: 6}),
+      frameRate: 20,
+      repeat: -1
+    });
     
     // Cameras Main
     this.camera = this.cameras.main
     this.camera.startFollow(this.player,true)
-    this.camera.setBounds(0,0,map.widthInPixels,map.heightInPixels)
+    this.camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels)
     this.camera.setZoom(1.5);
 
 
@@ -182,16 +224,49 @@ export default class GameScene extends Phaser.Scene {
     })
     // this.events.emit('gameCountDown',{countDown:10});
 
-    this.physics.add.overlap(this.player, this.slimes, this.PlayerAttack, function (player,monsters){
-      if(player.anims.getCurrentKey() == "attack_left" || player.anims.getCurrentKey() == "attack_right"){
-        return true
-      }else{
-        return false
-      }
-    }, this);
+    // this.physics.add.overlap(this.player, this.slimes, this.PlayerAttack, function (player,monsters){
+    //   if(player.anims.getCurrentKey() == "attack_left" || player.anims.getCurrentKey() == "attack_right"){
+    //     return true
+    //   }else{
+    //     return false
+    //   }
+    // }, this);
 
-    this.physics.add.overlap(this.slimes, this.player, this.MonsterAttack, function (monsters,player){
-      if(this.CheckIfPlayerIsAttacking() || this.CheckIfPlayerIsImmune()){
+
+    this.timedEvent = this.time.addEvent({
+      delay: 500,
+      callback: this.moveMonsters,
+      callbackScope: this,
+      loop: true
+    });
+
+    this.spawnerEvent = this.time.addEvent({
+      delay:5000,
+      callback:function () {
+        this.map.findObject('Enemies', function(object) {
+          if (object.type === 'Hibrid' && this.monsters.countActive() < 4) {
+            let n = Math.random() * 10
+            if(n > 5){
+              let javali = new Javali(this,object.x,object.y,"javali",0)
+              //  this.physics.add.sprite(object.x,object.y,"slime",0)
+              this.physics.add.collider(javali, this.ground);
+              this.monsters.add(javali);
+            }else{
+              let slime = new Slime(this,object.x,object.y,"slime",0)
+              //  this.physics.add.sprite(object.x,object.y,"slime",0)
+              this.physics.add.collider(slime, this.ground);
+              this.monsters.add(slime);
+            }
+          }
+        },this)
+
+        
+      },
+      callbackScope: this,
+      loop: true
+    })
+    this.physics.add.overlap(this.monsters, this.player, this.MonsterAttack, function (monsters,player){
+      if(this.CheckIfPlayerIsImmune()){
         return false
       }else{
         return true
@@ -206,30 +281,49 @@ export default class GameScene extends Phaser.Scene {
 
 
   onKeyInput(event){    
-    if(event.code == "KeyA" && !this.CheckIfPlayerIsImmune()){
+    if(event.code == "KeyA"){
       this.player.body.setVelocity(0)
       if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
         this.player.anims.play('attack_left', true);
+        let bodies = this.physics.overlapRect(this.player.x - 40,this.player.y,20,20)
+        bodies.forEach(body => {
+          if(body === this.player) return;
+          if(body.gameObject.type == "Monster"){
+            this.PlayerAttack(this.player,body.gameObject)
+          }
+          
+        })
       }
       
       if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right"){
         this.player.anims.play('attack_right', true);
-        // this.physics.add.overlapCirc(this.player.x + 20,this.player.y,20)
+        let bodies = this.physics.overlapRect(this.player.x + 20,this.player.y,20,20)
+        bodies.forEach(body => {
+          if(body.gameObject.type == "Monster"){
+            this.PlayerAttack(this.player,body.gameObject)
+          }
+        })
+
       }
     }
   }
 
   PlayerAttack(player, monster){
     if(!monster.already_attack){
-      monster.healthbar.decrease_custom(10);
+      let isDead = monster.healthbar.decrease_custom(10);
       monster.already_attack = true
       monster.body.setVelocityY(-200)
       player.immune = true;
+      
+      monster.tint = 0xb50000;
       // monster.movement_ac = (monster.movement_ac * -1) > 0 ? 1 : -1
       this.time.delayedCall(1000, function() {
+
+        monster.tint = 16777215;
         monster.movement_ac = monster.movement_ac * -1
         monster.already_attack = false
         player.immune = false;
+        isDead ? monster.death() : false
         // enemy.follow = true;
       }, this);
       player.body.x > monster.body.x ? monster.movement_ac = -1 : monster.movement_ac = 1
@@ -239,10 +333,24 @@ export default class GameScene extends Phaser.Scene {
     
   }
 
+
+  PlayerDeath(){
+    if(this.player.healthBar.isDead()){
+      this.player.immune = true;
+      if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right"){
+        this.player.anims.play('dead_right', true);
+      }
+      if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
+        this.player.anims.play('dead_left', true);
+      }
+    }
+  }
+
   MonsterAttack(monster, player){
     if(!this.CheckIfPlayerIsImmune()){
       monster.attacking = true
       EventCenter.emit('DecreaseLifeOfPlayer',10);
+      this.PlayerDeath()
       player.immune = true;
       player.body.x > monster.body.x ? monster.movement_ac = 1 : monster.movement_ac = -1
       this.time.delayedCall(1000, function() {
@@ -258,27 +366,40 @@ export default class GameScene extends Phaser.Scene {
     
   }
 
+  moveMonsters(){
+    Phaser.Actions.Call(this.monsters.getChildren() , function(monster) {
+      if(monster.active){
+        monster.Movement()
+      }
+      // if(monster)
+      // let distance = this.player.x - monster.x
+      // distance = distance > 0 ? distance : distance * -1
+      // let PlayerinDistance = distance > 90 ? false : true
+      // if(monster.specie == "Javali") console.log("Distance " + PlayerinDistance)
+      
+    },this)
+  }
   
   update(){
     
     // let i = this.events.emit('DecreaseLifeOfPlayer',{countDown:1});
     // console.log(i)
     // this.count-=1
-    if(!this.CheckIfPlayerIsAttacking()){
+    if(!this.CheckIfPlayerIsAttacking() && !this.player.healthBar.isDead()){
       const prevVelocity = this.player.body.velocity.clone()
       const cursors = this.input.keyboard.createCursorKeys()
       if(cursors.left.isDown && cursors.up.isDown && this.player.body.blocked.down){
-        this.player.body.setVelocityX(-200)
+        this.player.body.setVelocityX(-120)
         this.player.body.setVelocityY(-350)
       }else if(cursors.right.isDown && cursors.up.isDown && this.player.body.blocked.down){
-        this.player.body.setVelocityX(200)
+        this.player.body.setVelocityX(120)
         this.player.body.setVelocityY(-350)
       }else if(cursors.left.isDown){
-        this.player.body.setVelocityX(-200)
+        this.player.body.setVelocityX(-120)
         this.player.anims.play('left', true);
     
       } else if(cursors.right.isDown){
-        this.player.body.setVelocityX(200)
+        this.player.body.setVelocityX(120)
         this.player.anims.play('right', true);
     
       } else if(cursors.up.isDown && this.player.body.blocked.down){
@@ -286,7 +407,8 @@ export default class GameScene extends Phaser.Scene {
         this.player.body.setVelocityY(-900)
     
       } else if(cursors.down.isDown){
-        this.player.anims.play('turn', true);
+        // this.player.anims.play('turn', true);
+        this.player.anims.play('dead_right', true);
         this.player.body.setVelocity(0)
     
       }else{
@@ -302,9 +424,9 @@ export default class GameScene extends Phaser.Scene {
       }
     }
 
-    Phaser.Actions.Call(this.slimes.getChildren(), function(slime) {
-      slime.Movement()
-    },this)
+    // Phaser.Actions.Call(this.slimes.getChildren(), function(slime) {
+    //   slime.Movement()
+    // },this)
 
     // this.javali.anims.play('left_javali',true)
     

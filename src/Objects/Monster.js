@@ -21,9 +21,14 @@ export default class Monster extends Phaser.Physics.Arcade.Sprite {
     }
     preUpdate(time,delta){
         this.anims.update(time, delta);
-        this.healthbar.setXandY(this.x,this.y - 50, 20, 10)
+        
+        this.active ? this.healthbar.setXandY(this.x,this.y - 50, 20, 10) : false
     }
 
+    death(){
+        this.destroy();
+        this.healthbar.bar.destroy();
+    }
 
     update(){
     }
