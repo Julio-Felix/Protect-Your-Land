@@ -12,7 +12,8 @@ export default class Monster extends Phaser.Physics.Arcade.Sprite {
         this.healthbar = new HealthBar(scene,x,y,1)
         
         this.already_attack = false
-        this.movement_ac = 1
+        this.movement_ac = (Math.floor(Math.random() * 65536) - 32768) > 0 ? 1 : -1
+        
 
         this.setCollideWorldBounds(true)
         this.setGravityY(600)

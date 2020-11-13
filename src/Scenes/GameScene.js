@@ -2,12 +2,11 @@ import 'phaser';
 import EventCenter from '../Objects/EventCenter.js'
 import Slime from '../Classes/Slime.js'
 import Javali from '../Classes/Javali.js'
-
 // import logoImg from "../assets/logo.png";
 export default class GameScene extends Phaser.Scene {
   constructor () {
     super('Game');
-
+    
   }
 
   preload () {
@@ -21,7 +20,12 @@ export default class GameScene extends Phaser.Scene {
   }
   create() {
     this.scene.bringToTop('HUDScene')
+    this.turn = 1
     this.power = 0
+
+
+
+    // Map Config
     this.map = this.make.tilemap({key :  "map"})
     const tileset2 = this.map.addTilesetImage("pngbarn (1)","tiles2")
     const tileset3 = this.map.addTilesetImage("generic_platformer_tiles","tileset3")
@@ -73,7 +77,7 @@ export default class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'attack_right',
       frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Attack (', suffix:').png' }),
-      frameRate: 150,
+      frameRate: 300,
       repeat:0
     });
     
@@ -81,7 +85,7 @@ export default class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'attack_left',
       frames:this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'Attack (', suffix:') left.png' }),
-      frameRate: 150,
+      frameRate: 300,
       repeat:0
     });
 
@@ -140,25 +144,26 @@ export default class GameScene extends Phaser.Scene {
     }, this);
 
     this.map.findObject('Player',function(object){
-      this.player = this.physics.add.sprite(object.x,object.y,"Player","Idle (1).png")
+      this.player = this.physics.add.sprite(object.x,object.y,"Player","Idle (1).png");
       this.player.setScale(0.1, 0.1);
       this.physics.add.collider(this.player, this.ground);
-      this.player.setGravityY(600)
+      this.player.setGravityY(600);
       this.player.body.collideWorldBounds = true;
-      this.player.type = "Player"
+      this.player.type = "Player";
+      this.player.score = 0;
       this.player.on("animationcomplete",function(animation,frame,gameobject){
         if(animation.key == "attack_right" || animation.key == "attack_left"){ 
-          this.player.body.setVelocity(0)
+          // this.player.body.setVelocity(0);
           if(animation.key == "attack_left") this.player.anims.play('turn_left', true);
           else if(animation.key == "attack_right") this.player.anims.play('turn_right', true);
   
           Phaser.Actions.Call(this.monsters.getChildren() , function(monster) {
-            monster.already_attack = false
-          },this)
+            monster.already_attack = false;
+          },this);
   
         }
-      },this)
-    },this)
+      },this);
+    },this);
 
 
     // this.physics.add.collider(this.slime, this.ground);
@@ -244,7 +249,7 @@ export default class GameScene extends Phaser.Scene {
       delay:5000,
       callback:function () {
         this.map.findObject('Enemies', function(object) {
-          if (object.type === 'Hibrid' && this.monsters.countActive() < 4) {
+          if (object.type === 'Hibrid' && this.monsters.countActive() < this.turn) {
             let n = Math.random() * 10
             if(n > 5){
               let javali = new Javali(this,object.x,object.y,"javali",0)
@@ -266,7 +271,7 @@ export default class GameScene extends Phaser.Scene {
       loop: true
     })
     this.physics.add.overlap(this.monsters, this.player, this.MonsterAttack, function (monsters,player){
-      if(this.CheckIfPlayerIsImmune()){
+      if(this.CheckIfPlayerIsImmune() || this.player.healthBar.isDead()){
         return false
       }else{
         return true
@@ -281,7 +286,7 @@ export default class GameScene extends Phaser.Scene {
 
 
   onKeyInput(event){    
-    if(event.code == "KeyA"){
+    if(event.code == "KeyA" && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsImmune()){
       this.player.body.setVelocity(0)
       if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
         this.player.anims.play('attack_left', true);
@@ -310,23 +315,33 @@ export default class GameScene extends Phaser.Scene {
 
   PlayerAttack(player, monster){
     if(!monster.already_attack){
-      let isDead = monster.healthbar.decrease_custom(10);
+      let isDead = monster.healthbar.decrease_custom(10 * this.turn);
       monster.already_attack = true
       monster.body.setVelocityY(-200)
       player.immune = true;
       
       monster.tint = 0xb50000;
-      // monster.movement_ac = (monster.movement_ac * -1) > 0 ? 1 : -1
-      this.time.delayedCall(1000, function() {
-
-        monster.tint = 16777215;
-        monster.movement_ac = monster.movement_ac * -1
-        monster.already_attack = false
+      if(isDead && monster.active) {
+        monster.death() 
+        player.score+=50
         player.immune = false;
-        isDead ? monster.death() : false
-        // enemy.follow = true;
-      }, this);
-      player.body.x > monster.body.x ? monster.movement_ac = -1 : monster.movement_ac = 1
+        this.turn = parseInt(player.score / 100) + 1
+        EventCenter.emit('setTurn&Score',{'turn':this.turn,'score':player.score});
+      }else{
+        player.body.x > monster.body.x ? monster.movement_ac = 1 : monster.movement_ac = -1
+        this.time.delayedCall(1000, function() {
+
+          monster.tint = 16777215;
+          monster.movement_ac = monster.movement_ac * -1
+          monster.already_attack = false
+          player.immune = false;
+          
+          // enemy.follow = true;
+        }, this);
+      }
+      // monster.movement_ac = (monster.movement_ac * -1) > 0 ? 1 : -1
+      
+      
       // if (monster.anims.getCurrentKey() == "right_slime")monster.movement_ac = -1;
       // if (monster.anims.getCurrentKey() == "left_slime") monster.movement_ac = 1;
     }
@@ -343,25 +358,15 @@ export default class GameScene extends Phaser.Scene {
       if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
         this.player.anims.play('dead_left', true);
       }
+      EventCenter.emit('Player_Death');
+
     }
   }
 
   MonsterAttack(monster, player){
     if(!this.CheckIfPlayerIsImmune()){
-      monster.attacking = true
-      EventCenter.emit('DecreaseLifeOfPlayer',10);
+      monster.Attack(monster,player)
       this.PlayerDeath()
-      player.immune = true;
-      player.body.x > monster.body.x ? monster.movement_ac = 1 : monster.movement_ac = -1
-      this.time.delayedCall(1000, function() {
-        player.immune = false;
-        monster.movement_ac = monster.movement_ac * -1
-        monster.attacking = false;
-        // enemy.follow = true;
-      }, this);
-
-      player.body.setVelocityY(-200)
-
     }
     
   }

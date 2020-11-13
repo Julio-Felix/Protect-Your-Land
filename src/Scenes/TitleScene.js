@@ -10,6 +10,18 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   create () {
+    var width = config.width;
+    var height = config.height;
+    var game_name = this.make.text({
+      x: width / 2,
+      y: height / 2 - 175,
+      text: 'Protect Your Land',
+      style: {
+        font: '38px fantasy',
+        fill: '#ffffff'
+      }
+    });
+    game_name.setOrigin(0.5, 0.5);
     // Game
     this.gameButton = new Button(this, config.width/2, config.height/2 - 100, 'blueButton1', 'blueButton2', 'Play', 'Game');
     // Options
