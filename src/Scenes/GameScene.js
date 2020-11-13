@@ -286,7 +286,7 @@ export default class GameScene extends Phaser.Scene {
 
 
   onKeyInput(event){    
-    if(event.code == "KeyA" && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsImmune()){
+    if(event.code == "KeyA" && !this.player.healthBar.isDead()){
       this.player.body.setVelocity(0)
       if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
         this.player.anims.play('attack_left', true);
