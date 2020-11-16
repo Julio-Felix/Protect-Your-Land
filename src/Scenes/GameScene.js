@@ -102,6 +102,20 @@ export default class GameScene extends Phaser.Scene {
       frameRate: 60,
       repeat:0
     });
+
+    this.anims.create({
+      key: 'dash_right',
+      frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'JumpAttack (', suffix:').png' }),
+      frameRate: 60,
+      repeat:0
+    });
+
+    this.anims.create({
+      key: 'dash_left',
+      frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'JumpAttack (', suffix:') left.png' }),
+      frameRate: 60,
+      repeat:0
+    });
     
     // Slime
     // this.slime = this.physics.add.sprite(90,850,"slime",0)
@@ -162,6 +176,13 @@ export default class GameScene extends Phaser.Scene {
           },this);
   
         }
+        if(animation.key == "dash_right" || animation.key == "dash_left"){
+          this.player.setVelocityX(0)
+          if(this.player.anims.getCurrentKey() == "dash_right") this.player.anims.play('turn_right', true);
+          else if(this.player.anims.getCurrentKey() == "dash_left") this.player.anims.play('turn_left', true);
+          this.player.immune = false
+        } 
+
       },this);
     },this);
 
@@ -286,9 +307,9 @@ export default class GameScene extends Phaser.Scene {
 
 
   onKeyInput(event){    
-    if(event.code == "KeyA" && !this.player.healthBar.isDead()){
+    if(event.code == "KeyA" && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsActing()){
       this.player.body.setVelocity(0)
-      if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
+      if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left" || this.player.anims.getCurrentKey() == "dash_left"){
         this.player.anims.play('attack_left', true);
         let bodies = this.physics.overlapRect(this.player.x - 40,this.player.y,20,20)
         bodies.forEach(body => {
@@ -300,7 +321,7 @@ export default class GameScene extends Phaser.Scene {
         })
       }
       
-      if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right"){
+      if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right" || this.player.anims.getCurrentKey() == "dash_right"){
         this.player.anims.play('attack_right', true);
         let bodies = this.physics.overlapRect(this.player.x + 20,this.player.y,20,20)
         bodies.forEach(body => {
@@ -308,6 +329,23 @@ export default class GameScene extends Phaser.Scene {
             this.PlayerAttack(this.player,body.gameObject)
           }
         })
+
+      }
+    }
+    if(event.code == "KeyD" && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsActing()){
+
+      if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left" || this.player.anims.getCurrentKey() == "dash_left"){
+        this.player.anims.play('dash_left', true);
+        this.player.setVelocityX(-350)
+        this.player.setVelocityY(-250)
+        this.player.immune = true
+      }
+      
+      if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right" || this.player.anims.getCurrentKey() == "dash_right"){
+        this.player.anims.play('dash_right', true);
+        this.player.setVelocityX(350)
+        this.player.setVelocityY(-150)
+        this.player.immune = true
 
       }
     }
@@ -352,6 +390,7 @@ export default class GameScene extends Phaser.Scene {
   PlayerDeath(){
     if(this.player.healthBar.isDead()){
       this.player.immune = true;
+      this.player.setVelocityX(0);
       if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right"){
         this.player.anims.play('dead_right', true);
       }
@@ -390,7 +429,7 @@ export default class GameScene extends Phaser.Scene {
     // let i = this.events.emit('DecreaseLifeOfPlayer',{countDown:1});
     // console.log(i)
     // this.count-=1
-    if(!this.CheckIfPlayerIsAttacking() && !this.player.healthBar.isDead()){
+    if(!this.CheckIfPlayerIsAttacking() && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsActing()){
       const prevVelocity = this.player.body.velocity.clone()
       const cursors = this.input.keyboard.createCursorKeys()
       if(cursors.left.isDown && cursors.up.isDown && this.player.body.blocked.down){
@@ -440,6 +479,14 @@ export default class GameScene extends Phaser.Scene {
 
   CheckIfPlayerIsAttacking(){
     if((this.player.anims.getCurrentKey() == "attack_right" || this.player.anims.getCurrentKey() == "attack_left") ){
+      return true
+    }else{
+      return false
+    }
+  }
+
+  CheckIfPlayerIsActing(){
+    if((this.player.anims.getCurrentKey() == "dash_right" || this.player.anims.getCurrentKey() == "dash_left") ){
       return true
     }else{
       return false
