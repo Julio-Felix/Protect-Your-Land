@@ -3,7 +3,7 @@ import Map from "../assets/RealesedMap.json"
 
 import second_map from "../assets/ReleasedMap2.json"
 
-import background from "../assets/background.png";
+
 import pngbarn from "../assets/pngbarn (1).png";
 import qmc from "../assets/1_qmckz-4ppRl9i8-tEmGmHw.png";
 import decorative_obj from "../assets/decorative_obj.png";
@@ -59,6 +59,14 @@ export default class PreloaderScene extends Phaser.Scene {
 
 
   preload () {
+    this.cameras.main.setBounds(0, 0, 4000, 4000);
+    this.physics.world.setBounds(0, 0, 4000, 4000);
+    /*
+    background images is 500x500 world is 4000x4000
+    This image does not scael well, another option
+    would be to display it not scaled 4 times 0,0 0,500 500,0 500,500
+    */
+    this.add.image(0, 0, 'background').setOrigin(0).setScale(1);
     // this.add.image(400, 200, 'logo');
     var progressBar = this.add.graphics();
     var progressBox = this.add.graphics();
@@ -73,7 +81,8 @@ export default class PreloaderScene extends Phaser.Scene {
       text: 'Loading...',
       style: {
         font: '20px fantasy',
-        fill: '#ffffff'
+        color:'#000',
+        // fill: '#ffffff'
       }
     });
     loadingText.setOrigin(0.5, 0.5);
@@ -84,7 +93,8 @@ export default class PreloaderScene extends Phaser.Scene {
       text: '0%',
       style: {
         font: '18px monospace',
-        fill: '#ffffff'
+        // fill: '#ffffff'
+        color:'#000'
       }
     });
     percentText.setOrigin(0.5, 0.5);
@@ -95,7 +105,8 @@ export default class PreloaderScene extends Phaser.Scene {
       text: 'Protect your Land',
       style: {
         font: '48px fantasy',
-        fill: '#ffffff'
+        // fill: '#ffffff',
+        color:'#000'
       }
     });
     GameNameText.setOrigin(0.5, 0.5);
@@ -156,7 +167,7 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.image("tiles2",pngbarn)
     this.load.image("tileset3",tiles3)
     this.load.image("tiles4",decorative_obj)
-    this.load.image("background",background)
+    
     this.load.tilemapTiledJSON("map",Map)
     this.load.tilemapTiledJSON("map_second_level",second_map)
     this.load.spritesheet("slime",slime,{ frameWidth: 110, frameHeight: 90 })
@@ -164,5 +175,6 @@ export default class PreloaderScene extends Phaser.Scene {
   }
  
   create () {
+
   }
 };

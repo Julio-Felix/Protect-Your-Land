@@ -7,11 +7,11 @@
 
 - Objetivo geral: Proteger e Garantir sua Terra, assim como sua subsistência e sobrevivencia. de outros que desejam garantir sua própria subsistência e sobreviver.
 
-- Objetivo Especifico: Sobreviver em um curto mundo. Onde os recursos e terra são escassos.
+- Objetivo Especifico: Limpar e/ou Matar os Monstros que Vivem naquela Terra ou que invadem. Em um Mundo onde os recursos e terra são escassos.
 
 ## Enredo e personagens: 
 
-- Personagem Principal, Um Jovem Perdido no mundo. Tentar sobreviver garantir sua sobrevivência. Em um mundo desconhecido de Natureza Desconhecida
+- Personagem Principal, Um Jovem Aspirante a Cavaleiro do Reino. Tenta Conquista e Terras para seu Rei. Em um mundo desconhecido de Natureza Desconhecida
 
 - Inimigos: A Natureza Selvagem do Mundo. 
 

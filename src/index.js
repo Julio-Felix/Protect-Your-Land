@@ -1,13 +1,14 @@
 import Phaser from "phaser";
 import config from './Config/config.js';
 import GameScene from './Scenes/GameScene.js';
-import SecondLevel from './Scenes/SecondLevel.js';
+import FinishGame from './Scenes/FinishGameScene.js';
 import BootScene from './Scenes/BootScene.js';
 import PreloaderScene from './Scenes/PreloaderScene.js';
 import TitleScene from './Scenes/TitleScene.js';
 import OptionsScene from './Scenes/OptionsScene.js';
 import CreditsScene from './Scenes/CreditsScene.js';
 import HUDScene from './Scenes/HUDScene.js';
+import InstructionsScene from './Scenes/InstructionsScene.js'
 import Model from './Model.js';
 class Game extends Phaser.Game {
   constructor(){
@@ -24,7 +25,8 @@ class Game extends Phaser.Game {
     this.scene.add('Credits', CreditsScene);
     this.scene.add('HUDScene', HUDScene);
     this.scene.add('Game', GameScene);
-    this.scene.add("SecondLevel",SecondLevel)
+    this.scene.add("FinishGame",FinishGame)
+    this.scene.add("Instructions",InstructionsScene)
     this.scene.start('Boot')
   }
   

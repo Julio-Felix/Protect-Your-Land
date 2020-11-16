@@ -33,7 +33,7 @@ export default class HUDScene extends Phaser.Scene {
         });
         gameOvertext.setOrigin(0.5, 0.5);
         this.restartButton = new Button_func(this, x, y, 'blueButton1', 'blueButton2', 'Restart', 'Game');
-        this.restartButton = new Button(this, x, y + 100, 'blueButton1', 'blueButton2', 'Main Menu', 'Title');
+        this.mainMenuButton = new Button(this, x, y + 100, 'blueButton1', 'blueButton2', 'Main Menu', 'Title');
       },[], this);
     }, this)
 
@@ -60,6 +60,9 @@ export default class HUDScene extends Phaser.Scene {
     this.Score.setOrigin(0.5, 0.5);
 
     EventCenter.on('setTurn&Score', function(obj){
+      if(obj.turn == 2) {
+        this.scene.launch("FinishGame").stop('Game').stop();
+      }
       this.Turn.setText("Turno: "+obj.turn)
       this.Score.setText("Score: "+obj.score)
     }, this)

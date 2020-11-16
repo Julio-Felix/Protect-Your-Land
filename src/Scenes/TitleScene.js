@@ -10,6 +10,16 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   create () {
+    this.cameras.main.setBounds(0, 0, 4000, 4000);
+    this.physics.world.setBounds(0, 0, 4000, 4000);
+    /*
+    background images is 500x500 world is 4000x4000
+    This image does not scael well, another option
+    would be to display it not scaled 4 times 0,0 0,500 500,0 500,500
+    */
+    this.add.image(0, 0, 'background').setOrigin(0).setScale(1);
+
+
     var width = config.width;
     var height = config.height;
     var game_name = this.make.text({
@@ -18,9 +28,10 @@ export default class TitleScene extends Phaser.Scene {
       text: 'Protect Your Land',
       style: {
         font: '38px fantasy',
-        fill: '#ffffff'
+        color:'#000'
       }
     });
+    
     game_name.setOrigin(0.5, 0.5);
     // Game
     this.gameButton = new Button(this, config.width/2, config.height/2 - 100, 'blueButton1', 'blueButton2', 'Play', 'Game');
@@ -28,6 +39,8 @@ export default class TitleScene extends Phaser.Scene {
     this.optionsButton = new Button(this, config.width/2, config.height/2, 'blueButton1', 'blueButton2', 'Options', 'Options');
     // Credits
     this.creditsButton = new Button(this, config.width/2, config.height/2 + 100, 'blueButton1', 'blueButton2', 'Credits', 'Credits');
+    // Instructions
+    this.instructionsButton = new Button(this, config.width/2, config.height/2 + 200, 'blueButton1', 'blueButton2', 'Instruções', 'Instructions');
 
     this.model = this.sys.game.globals.model;
     if (this.model.musicOn === true && this.model.bgMusicPlaying === false) {

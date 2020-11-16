@@ -106,14 +106,14 @@ export default class GameScene extends Phaser.Scene {
     this.anims.create({
       key: 'dash_right',
       frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'JumpAttack (', suffix:').png' }),
-      frameRate: 60,
+      frameRate: 480,
       repeat:0
     });
 
     this.anims.create({
       key: 'dash_left',
       frames: this.anims.generateFrameNames('Player', { start: 1, end: 10,prefix:'JumpAttack (', suffix:') left.png' }),
-      frameRate: 60,
+      frameRate: 480,
       repeat:0
     });
     
@@ -270,7 +270,7 @@ export default class GameScene extends Phaser.Scene {
       delay:5000,
       callback:function () {
         this.map.findObject('Enemies', function(object) {
-          if (object.type === 'Hibrid' && this.monsters.countActive() < this.turn) {
+          if (object.type === 'Hibrid' && this.monsters.countActive() < (parseInt(this.turn / 3) + 1)) {
             let n = Math.random() * 10
             if(n > 5){
               let javali = new Javali(this,object.x,object.y,"javali",0)
@@ -307,7 +307,7 @@ export default class GameScene extends Phaser.Scene {
 
 
   onKeyInput(event){    
-    if(event.code == "KeyA" && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsActing()){
+    if(event.code == "KeyA" && !this.player.healthBar.isDead() && !this.CheckIfPlayerIsActing() && !this.CheckIfPlayerIsImmune()){
       this.player.body.setVelocity(0)
       if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left" || this.player.anims.getCurrentKey() == "dash_left"){
         this.player.anims.play('attack_left', true);
@@ -336,15 +336,15 @@ export default class GameScene extends Phaser.Scene {
 
       if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left" || this.player.anims.getCurrentKey() == "dash_left"){
         this.player.anims.play('dash_left', true);
-        this.player.setVelocityX(-350)
-        this.player.setVelocityY(-250)
+        this.player.setVelocityX(-200)
+        // this.player.setVelocityY(-150)
         this.player.immune = true
       }
       
       if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right" || this.player.anims.getCurrentKey() == "dash_right"){
         this.player.anims.play('dash_right', true);
-        this.player.setVelocityX(350)
-        this.player.setVelocityY(-150)
+        this.player.setVelocityX(200)
+        // this.player.setVelocityY(-150)
         this.player.immune = true
 
       }
@@ -391,10 +391,10 @@ export default class GameScene extends Phaser.Scene {
     if(this.player.healthBar.isDead()){
       this.player.immune = true;
       this.player.setVelocityX(0);
-      if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right"){
+      if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right" || this.player.anims.getCurrentKey() == "dash_right"){
         this.player.anims.play('dead_right', true);
       }
-      if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left"){
+      if(this.player.anims.getCurrentKey() == "left" || this.player.anims.getCurrentKey() == "turn_left" || this.player.anims.getCurrentKey() == "dash_left"){
         this.player.anims.play('dead_left', true);
       }
       EventCenter.emit('Player_Death');
@@ -405,6 +405,10 @@ export default class GameScene extends Phaser.Scene {
   MonsterAttack(monster, player){
     if(!this.CheckIfPlayerIsImmune()){
       monster.Attack(monster,player)
+      player.tint = 0xb50000;
+      this.time.delayedCall(1000, function() {
+        player.tint = 16777215;
+      }, this);
       this.PlayerDeath()
     }
     
