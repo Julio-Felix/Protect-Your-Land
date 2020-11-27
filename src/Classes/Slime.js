@@ -7,10 +7,12 @@ export default class Slime extends Monster {
         super(scene,x,y,spritesheet,frame)
         this.type = 'Monster'
         this.specie = "Slime"
+        this.setMaxVelocity(50)
     }
 
     Movement(){
         if(this.active){
+          if(!this.scene.soundSlime.isPlaying && this.scene.model.soundOn)this.scene.soundSlime.play()
           // if(this.body.blocked.down) this.body.setVelocityY(200)
     
           if(this.body.blocked.left) this.movement_ac= 1
@@ -19,7 +21,7 @@ export default class Slime extends Monster {
           
           if(this.movement_ac > 0) {this.anims.play('right_slime',true); this.movement_ac+=15}
           else {this.anims.play('left_slime',true);this.movement_ac-=15;}
-    
+          
           
           if(this.already_attack) this.body.setVelocityX(this.movement_ac)
           

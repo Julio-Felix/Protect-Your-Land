@@ -60,8 +60,8 @@ export default class HUDScene extends Phaser.Scene {
     this.Score.setOrigin(0.5, 0.5);
 
     EventCenter.on('setTurn&Score', function(obj){
-      if(obj.turn == 2) {
-        this.scene.launch("FinishGame").stop('Game').stop();
+      if(obj.turn == 5) {
+        this.scene.launch("FinishGame",{ score: obj.score }).stop('Game').stop();
       }
       this.Turn.setText("Turno: "+obj.turn)
       this.Score.setText("Score: "+obj.score)

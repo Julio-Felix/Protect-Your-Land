@@ -29,6 +29,8 @@ import PhaserLogo from '../assets/tutorial/assets/logo.png';
 import greyBox from '../assets/tutorial/assets/ui/grey_box.png';
 import checkbox from '../assets/tutorial/assets/ui/blue_boxCheckmark.png';
 import TownThemeMusic from '../assets/tutorial/assets/TownTheme.mp3';
+import Javali_sound from '../assets/Sound/animals_bear_growl_grunt_001.mp3';
+import Slime_sound from '../assets/Sound/zapsplat_cartoon_slime_bubbles_001_54614.mp3';
 import ButtonBlue from '../assets/tutorial/assets/ui/blue_button02.png';
 import ButtonBlue3 from '../assets/tutorial/assets/ui/blue_button03.png';
 
@@ -139,6 +141,8 @@ export default class PreloaderScene extends Phaser.Scene {
     this.load.image('box', greyBox);
     this.load.image('checkedBox', checkbox);
     this.load.audio('bgMusic', [TownThemeMusic]);
+    this.load.audio('slime-sound', Slime_sound)
+    this.load.audio('javali-sound', Javali_sound)
     this.load.image('blueButton1', ButtonBlue);
     this.load.image('blueButton2', ButtonBlue3);
 

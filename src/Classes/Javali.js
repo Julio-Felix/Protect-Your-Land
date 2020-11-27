@@ -12,14 +12,15 @@ export default class Javali extends Monster {
 
     Movement(PlayerinDistance){
         if(this.active){
+          if(!this.scene.soundJavali.isPlaying && this.scene.model.soundOn)this.scene.soundJavali.play()
           // if(this.body.blocked.down) this.body.setVelocityY(200)
     
           if(this.body.blocked.left) this.movement_ac= 1
       
           if(this.body.blocked.right) this.movement_ac= -1
           
-          if(this.movement_ac > 0) {this.anims.play('right_javali',true); this.movement_ac+=30}
-          else {this.anims.play('left_javali',true);this.movement_ac-=30;}
+          if(this.movement_ac > 0) {this.anims.play('right_javali',true); this.movement_ac+=25}
+          else {this.anims.play('left_javali',true);this.movement_ac-=25;}
         
           
           if(this.already_attack) this.body.setVelocityX(this.movement_ac)

@@ -23,7 +23,9 @@ export default class GameScene extends Phaser.Scene {
     this.turn = 1
     this.power = 0
 
-
+    this.soundSlime = this.sound.add('slime-sound',{volume:0.3,loop:false})
+    this.soundJavali = this.sound.add('javali-sound',{volume:0.3,loop:false})
+    this.model = this.sys.game.globals.model;
 
     // Map Config
     this.map = this.make.tilemap({key :  "map"})
@@ -235,7 +237,7 @@ export default class GameScene extends Phaser.Scene {
     this.camera = this.cameras.main
     this.camera.startFollow(this.player,true)
     this.camera.setBounds(0,0,this.map.widthInPixels,this.map.heightInPixels)
-    this.camera.setZoom(1.5);
+    this.camera.setZoom(2);
 
 
 
@@ -390,6 +392,8 @@ export default class GameScene extends Phaser.Scene {
   PlayerDeath(){
     if(this.player.healthBar.isDead()){
       this.player.immune = true;
+      this.player.body.width = 32
+      this.player.body.height = 18
       this.player.setVelocityX(0);
       if(this.player.anims.getCurrentKey() == "right" || this.player.anims.getCurrentKey() == "turn_right" || this.player.anims.getCurrentKey() == "dash_right"){
         this.player.anims.play('dead_right', true);
@@ -419,6 +423,7 @@ export default class GameScene extends Phaser.Scene {
       if(monster.active){
         monster.Movement()
       }
+
       // if(monster)
       // let distance = this.player.x - monster.x
       // distance = distance > 0 ? distance : distance * -1
