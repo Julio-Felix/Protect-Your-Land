@@ -29,7 +29,7 @@ export default class CreditsScene extends Phaser.Scene {
  
   create () {
     this.creditsText = this.add.text(0, 0, 'Credits', { fontSize: '32px', fill: '#fff' });
-    this.madeByText = this.add.text(0, 0, 'Created By: Julio Felix', { fontSize: '26px', fill: '#fff' });
+    this.madeByText = this.add.text(0, 600, 'Created By: Julio Felix', { fontSize: '26px', fill: '#fff' });
     this.zone = this.add.zone(config.width/2, config.height/2, config.width, config.height);
     
     this.BackButton();
@@ -39,11 +39,11 @@ export default class CreditsScene extends Phaser.Scene {
       this.zone
     );
     
-    Phaser.Display.Align.In.Center(
+    Phaser.Display.Align.In.BottomCenter(
       this.madeByText,
       this.zone
     );
     
-    this.madeByText.setY(1000);
+    // this.madeByText.setY(1000);
   }
 };

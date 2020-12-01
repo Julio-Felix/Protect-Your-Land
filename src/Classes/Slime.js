@@ -32,7 +32,7 @@ export default class Slime extends Monster {
     }
     Attack(monster,player){
         monster.attacking = true
-        EventCenter.emit('DecreaseLifeOfPlayer',30);
+        EventCenter.emit('DecreaseLifeOfPlayer',20);
         
         player.immune = true;
         player.body.x > monster.body.x ? monster.movement_ac = -1 : monster.movement_ac = 1

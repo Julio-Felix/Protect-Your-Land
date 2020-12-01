@@ -76,7 +76,7 @@ export default class HUDScene extends Phaser.Scene {
   
   update () {
     if(!this.sceneA.player.healthBar.isDead()){
-      this.sceneA.player.healthBar.increase(0.01)
+      this.sceneA.player.healthBar.increase(0.05)
     }
     
     // this.text.setText('Score:\n\n' + this.game.loop.frame);

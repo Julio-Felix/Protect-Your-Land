@@ -23,8 +23,8 @@ export default class GameScene extends Phaser.Scene {
     this.turn = 1
     this.power = 0
 
-    this.soundSlime = this.sound.add('slime-sound',{volume:0.3,loop:false})
-    this.soundJavali = this.sound.add('javali-sound',{volume:0.3,loop:false})
+    this.soundSlime = this.sound.add('slime-sound',{volume:0.2,loop:false})
+    this.soundJavali = this.sound.add('javali-sound',{volume:0.2,loop:false})
     this.model = this.sys.game.globals.model;
 
     // Map Config
